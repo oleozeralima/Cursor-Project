@@ -173,18 +173,24 @@ Se apareceram as 3 tabelas, está tudo certo! 🎉
 
 **Opção B: Usando Git no Terminal (AVANÇADO)**
 
-Se você tem Git instalado, abra o terminal na pasta do projeto e execute:
+Se você tem Git instalado, abra o terminal **na pasta do projeto** e execute:
 
 ```bash
 git init
 git add .
 git commit -m "Initial commit - projeto HYPE simplificado"
 git branch -M main
-git remote add origin https://github.com/SEU-USUARIO/hype-quiz.git
+git remote add origin https://github.com/SEU-USUARIO/SEU-REPOSITORIO.git
 git push -u origin main
 ```
 
-(Substitua `SEU-USUARIO` pelo seu nome de usuário do GitHub)
+**⚠️ IMPORTANTE:** 
+- Substitua `SEU-USUARIO` pelo seu nome de usuário do GitHub (ex: `oleozeralima`)
+- Substitua `SEU-REPOSITORIO` pelo nome do seu repositório (ex: `cursor-project` ou `hype-quiz`)
+
+**💡 Dica:** Antes de fazer `git push`, execute `git status` para verificar quais arquivos serão enviados. O `.gitignore` deve ignorar arquivos perigosos automaticamente.
+
+**📝 Veja mais detalhes em:** `COMANDOS-GIT.md`
 
 ### Passo 2.4: Verificar
 
