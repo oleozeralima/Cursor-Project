@@ -1,7 +1,7 @@
 // Supabase Authentication and user management
 // Simplified version with localStorage fallback
 
-let isLoginMode = true;
+let isLoginMode = false; // Começar no modo de cadastro
 
 // Helper functions
 function checkSupabaseAvailable() {
@@ -470,9 +470,29 @@ function initAuthForm() {
     }
 }
 
+// Initialize form in registration mode
+function initializeFormMode() {
+    // Como isLoginMode = false, precisamos configurar a interface para registro
+    const pageTitle = document.getElementById('pageTitle');
+    const pageSubtitle = document.getElementById('pageSubtitle');
+    const submitBtn = document.getElementById('submitBtn');
+    const toggleText = document.getElementById('toggleText');
+    const toggleModeBtn = document.getElementById('toggleModeBtn');
+    
+    if (!isLoginMode) {
+        // Modo de registro (padrão agora)
+        if (pageTitle) pageTitle.textContent = 'Registro';
+        if (pageSubtitle) pageSubtitle.textContent = 'Crie sua conta para começar';
+        if (submitBtn) submitBtn.textContent = 'Criar Conta';
+        if (toggleText) toggleText.textContent = 'Já tem uma conta?';
+        if (toggleModeBtn) toggleModeBtn.textContent = 'Fazer login';
+    }
+}
+
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
+        initializeFormMode(); // Configurar modo de registro
         setTimeout(() => {
             if (!initAuthForm()) {
                 setTimeout(initAuthForm, 100);
@@ -480,6 +500,7 @@ if (document.readyState === 'loading') {
         }, 100);
     });
 } else {
+    initializeFormMode(); // Configurar modo de registro
     setTimeout(() => {
         if (!initAuthForm()) {
             setTimeout(initAuthForm, 100);
