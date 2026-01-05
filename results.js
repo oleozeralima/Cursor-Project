@@ -676,14 +676,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('exportBtn')?.addEventListener('click', async () => {
         const exportBtn = document.getElementById('exportBtn');
         const originalText = exportBtn.textContent;
-        exportBtn.textContent = 'Gerando arquivo...';
+        exportBtn.textContent = 'Gerando HTML...';
         exportBtn.disabled = true;
         
         try {
+            console.log('🚀 Iniciando exportação HTML...');
+            
             // Verify data is loaded
             if (!userSkills || Object.keys(userSkills).length === 0) {
                 throw new Error('Dados não carregados. Por favor, recarregue a página de resultados.');
             }
+            
+            console.log('✅ Dados carregados:', Object.keys(userSkills));
             
             // Generate HTML content (async function)
             const htmlContent = await generateHTMLContent();
@@ -691,6 +695,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!htmlContent || htmlContent.trim().length === 0) {
                 throw new Error('Conteúdo está vazio. Verifique se completou o questionário.');
             }
+            
+            console.log('✅ HTML gerado, tamanho:', htmlContent.length, 'caracteres');
             
             // Create complete HTML document with styles
             const completeHTML = `
@@ -865,35 +871,47 @@ document.addEventListener('DOMContentLoaded', async () => {
 </body>
 </html>`;
             
-            // Create blob and download as HTML file
+            // Create blob and download as HTML file - FORÇAR DOWNLOAD
             const blob = new Blob([completeHTML], { type: 'text/html;charset=utf-8' });
             const url = URL.createObjectURL(blob);
+            
+            // Criar link de download
             const link = document.createElement('a');
             link.href = url;
             link.download = `Resultados-HYPE-${new Date().toISOString().split('T')[0]}.html`;
-            link.type = 'text/html';
+            link.setAttribute('download', `Resultados-HYPE-${new Date().toISOString().split('T')[0]}.html`);
             link.style.display = 'none';
+            link.style.visibility = 'hidden';
+            
+            // Adicionar ao body
             document.body.appendChild(link);
             
-            // Force download
-            const clickEvent = new MouseEvent('click', {
-                view: window,
-                bubbles: true,
-                cancelable: true
-            });
-            link.dispatchEvent(clickEvent);
+            // Forçar download imediatamente
+            link.click();
             
-            // Clean up
+            // Limpar após download
             setTimeout(() => {
-                document.body.removeChild(link);
+                if (link.parentNode) {
+                    document.body.removeChild(link);
+                }
                 URL.revokeObjectURL(url);
-            }, 100);
+            }, 200);
             
-            console.log('✅ Arquivo HTML gerado e baixado com sucesso!');
+            console.log('✅ Arquivo HTML gerado! Nome:', `Resultados-HYPE-${new Date().toISOString().split('T')[0]}.html`);
+            console.log('✅ Tipo do arquivo:', blob.type);
+            console.log('✅ Tamanho:', blob.size, 'bytes');
+            
+            // Confirmar que é HTML
+            if (blob.type !== 'text/html;charset=utf-8' && blob.type !== 'text/html') {
+                console.error('❌ ERRO: Tipo do arquivo está errado!', blob.type);
+                alert('Erro: O arquivo não está sendo gerado como HTML. Tipo: ' + blob.type);
+            } else {
+                console.log('✅ CONFIRMADO: Arquivo é HTML!');
+            }
             
         } catch (error) {
             alert('Erro ao exportar resultados: ' + (error.message || error.toString()));
-            console.error('Erro ao exportar:', error);
+            console.error('❌ Erro ao exportar:', error);
         } finally {
             exportBtn.textContent = originalText;
             exportBtn.disabled = false;
