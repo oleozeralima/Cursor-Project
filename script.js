@@ -68,7 +68,6 @@ function createQuestionCard(question, index) {
         </div>
             <div class="question-content">
             <div class="statement-wrapper left">
-                <span class="trait-label left-label">${question.leftLabel}</span>
                 <p class="statement">${question.left}</p>
             </div>
             
@@ -135,7 +134,6 @@ function createQuestionCard(question, index) {
                 </div>
             
             <div class="statement-wrapper right">
-                <span class="trait-label right-label">${question.rightLabel}</span>
                 <p class="statement">${question.right}</p>
             </div>
             </div>
