@@ -119,82 +119,179 @@ function drawMandala() {
     
     const centerX = size / 2;
     const centerY = size / 2;
-    const maxRadius = size / 2 - 40;
+    const maxRadius = size / 2 - 80;
     
-    // Clear canvas
     ctx.clearRect(0, 0, size, size);
     
-    // Draw background circle
-    ctx.fillStyle = '#252525';
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, maxRadius, 0, Math.PI * 2);
-    ctx.fill();
-    
     const traits = Object.keys(userSkills);
-    const angleStep = (Math.PI * 2) / traits.length;
+    const numTraits = traits.length;
+    const angleStep = (Math.PI * 2) / numTraits;
     
-    // Draw trait petals
+    // Encontrar o valor mais alto para destacar
+    const maxScore = Math.max(...Object.values(userSkills));
+    const maxTraitIndex = traits.findIndex(trait => userSkills[trait] === maxScore);
+    
+    // Fundo escuro
+    ctx.fillStyle = '#252525';
+    ctx.fillRect(0, 0, size, size);
+    
+    // Desenhar círculos concêntricos (grid)
+    ctx.strokeStyle = '#404040';
+    ctx.lineWidth = 1.5;
+    for (let i = 1; i <= 5; i++) {
+        const radius = (maxRadius / 5) * i;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    
+    // Desenhar linhas radiais (eixos)
+    traits.forEach((trait, index) => {
+        const angle = index * angleStep - Math.PI / 2;
+        const x = centerX + Math.cos(angle) * maxRadius;
+        const y = centerY + Math.sin(angle) * maxRadius;
+        
+        ctx.strokeStyle = '#404040';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+    });
+    
+    // Calcular pontos do polígono
+    const points = [];
     traits.forEach((trait, index) => {
         const angle = index * angleStep - Math.PI / 2;
         const score = userSkills[trait];
         const radius = (score / 100) * maxRadius;
-        
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
         const category = big5Traits[trait];
+        points.push({ x, y, trait, score, angle, index, color: category.color });
+    });
+    
+    // Desenhar polígono preenchido com cores por segmento
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    points.forEach((point, index) => {
+        const nextPoint = points[(index + 1) % points.length];
+        const category = big5Traits[point.trait];
         const color = category.color;
         
-        // Draw petal
-        ctx.fillStyle = color;
-        ctx.globalAlpha = 0.7;
+        // Triângulo do centro até este ponto e o próximo
+        ctx.fillStyle = color + '40'; // Adiciona transparência
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
+        ctx.lineTo(point.x, point.y);
+        ctx.lineTo(nextPoint.x, nextPoint.y);
+        ctx.closePath();
+        ctx.fill();
+    });
+    
+    // Desenhar borda do polígono com cores por segmento
+    points.forEach((point, index) => {
+        const nextPoint = points[(index + 1) % points.length];
+        const category = big5Traits[point.trait];
+        const color = category.color;
         
-        const petalWidth = angleStep * 0.8;
-        const x1 = centerX + Math.cos(angle - petalWidth / 2) * radius;
-        const y1 = centerY + Math.sin(angle - petalWidth / 2) * radius;
-        const x2 = centerX + Math.cos(angle + petalWidth / 2) * radius;
-        const y2 = centerY + Math.sin(angle + petalWidth / 2) * radius;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(point.x, point.y);
+        ctx.lineTo(nextPoint.x, nextPoint.y);
+        ctx.stroke();
+    });
+    
+    // Desenhar pontos e destacar o maior valor
+    points.forEach((point, index) => {
+        const category = big5Traits[point.trait];
+        const color = category.color;
+        const isMax = index === maxTraitIndex;
         
-        ctx.lineTo(x1, y1);
-        ctx.arc(centerX, centerY, radius, angle - petalWidth / 2, angle + petalWidth / 2);
-        ctx.lineTo(centerX, centerY);
+        // Ponto no gráfico
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, isMax ? 8 : 5, 0, Math.PI * 2);
         ctx.fill();
         
-        // Draw trait name
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 14px Arial';
-        ctx.textAlign = 'center';
-        const labelRadius = maxRadius + 20;
-        const labelX = centerX + Math.cos(angle) * labelRadius;
-        const labelY = centerY + Math.sin(angle) * labelRadius;
-        ctx.fillText(trait, labelX, labelY);
+        // Borda destacada para o maior valor
+        if (isMax) {
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
         
-        // Draw score
-        ctx.font = '12px Arial';
-        ctx.fillStyle = category.color;
-        ctx.fillText(`${score}%`, labelX, labelY + 15);
+        // Nome do traço
+        const labelRadius = maxRadius + 35;
+        const labelX = centerX + Math.cos(point.angle) * labelRadius;
+        const labelY = centerY + Math.sin(point.angle) * labelRadius;
+        
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 13px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(point.trait, labelX, labelY);
+        
+        // Número destacado
+        const numberY = labelY + (point.angle > 0 && point.angle < Math.PI ? 30 : -30);
+        
+        if (isMax) {
+            // Destaque especial para o maior valor
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.beginPath();
+            ctx.arc(labelX, numberY, 32, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(labelX, numberY, 32, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            ctx.font = 'bold 32px Arial';
+            ctx.fillStyle = color;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 4;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.strokeText(`${point.score}%`, labelX, numberY);
+            ctx.fillText(`${point.score}%`, labelX, numberY);
+        } else {
+            ctx.font = 'bold 22px Arial';
+            ctx.fillStyle = color;
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.strokeText(`${point.score}%`, labelX, numberY);
+            ctx.fillText(`${point.score}%`, labelX, numberY);
+        }
     });
     
-    // Draw center circle
+    // Círculo central
     ctx.fillStyle = '#1a1a1a';
     ctx.beginPath();
-    ctx.arc(centerX, centerY, 30, 0, Math.PI * 2);
+    ctx.arc(centerX, centerY, 15, 0, Math.PI * 2);
     ctx.fill();
     
-    // Create legend
+    // Criar legenda
     const legend = document.getElementById('skillsLegend');
     if (legend) {
-    legend.innerHTML = '';
+        legend.innerHTML = '';
         traits.forEach(trait => {
-        const item = document.createElement('div');
-        item.className = 'legend-item';
+            const item = document.createElement('div');
+            item.className = 'legend-item';
             const category = big5Traits[trait];
-        item.innerHTML = `
-            <div class="legend-color" style="background: ${category.color}"></div>
+            item.innerHTML = `
+                <div class="legend-color" style="background: ${category.color}"></div>
                 <span>${trait}</span>
-        `;
-        legend.appendChild(item);
-    });
+            `;
+            legend.appendChild(item);
+        });
     }
 }
 
@@ -536,7 +633,7 @@ function displayCompanyFit() {
     `;
 }
 
-// Generate clean HTML content for export with mandala
+// Generate clean HTML content for export with radar chart
 async function generateHTMLContent() {
     // Verify data is available
     if (!userSkills || Object.keys(userSkills).length === 0) {
@@ -565,7 +662,7 @@ async function generateHTMLContent() {
         compatibility: calculateCompatibility(member)
     })).sort((a, b) => b.compatibility - a.compatibility);
     
-    // Capture mandala canvas as image
+    // Capture radar chart canvas as image
     let mandalaImage = '';
     const canvas = document.getElementById('mandalaCanvas');
     if (canvas) {
@@ -579,9 +676,9 @@ async function generateHTMLContent() {
     // Create mandala HTML section
     const mandalaHtml = mandalaImage ? `
         <section>
-            <h3>Mandala de Personalidade BIG 5</h3>
+            <h3>Perfil de Personalidade BIG 5</h3>
             <div style="text-align: center; margin: 20px 0;">
-                <img src="${mandalaImage}" alt="Mandala de Personalidade BIG 5" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                <img src="${mandalaImage}" alt="Perfil de Personalidade BIG 5" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
             </div>
         </section>
     ` : '';
