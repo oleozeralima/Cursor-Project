@@ -158,7 +158,52 @@ function valueToPosition(value) {
             fill.style.left = `${position}%`;
             fill.style.width = `${50 - position}%`;
         }
-        // Keep all numbers visible - they're always shown above marks
+        
+        // Update colors based on direction
+        const card = document.querySelector(`[data-question-index="${index}"]`);
+        const leftStatement = card?.querySelector('.statement-wrapper.left .statement');
+        const rightStatement = card?.querySelector('.statement-wrapper.right .statement');
+        
+        if (value < 0) {
+            // Left side - Orange
+            fill.style.background = 'var(--accent-orange)';
+            thumb.style.background = 'var(--accent-orange)';
+            thumb.style.boxShadow = '0 2px 8px rgba(255, 107, 53, 0.6)';
+            if (leftStatement) {
+                leftStatement.style.color = 'var(--accent-orange)';
+                leftStatement.style.fontWeight = '600';
+            }
+            if (rightStatement) {
+                rightStatement.style.color = 'var(--text-secondary)';
+                rightStatement.style.fontWeight = '400';
+            }
+        } else if (value > 0) {
+            // Right side - Blue
+            fill.style.background = 'var(--accent-blue)';
+            thumb.style.background = 'var(--accent-blue)';
+            thumb.style.boxShadow = '0 2px 8px rgba(74, 144, 226, 0.6)';
+            if (rightStatement) {
+                rightStatement.style.color = 'var(--accent-blue)';
+                rightStatement.style.fontWeight = '600';
+            }
+            if (leftStatement) {
+                leftStatement.style.color = 'var(--text-secondary)';
+                leftStatement.style.fontWeight = '400';
+            }
+        } else {
+            // Center - Reset colors
+            fill.style.background = 'var(--accent-orange)';
+            thumb.style.background = 'var(--accent-orange)';
+            thumb.style.boxShadow = '0 2px 8px rgba(255, 107, 53, 0.6)';
+            if (leftStatement) {
+                leftStatement.style.color = 'var(--text-secondary)';
+                leftStatement.style.fontWeight = '400';
+            }
+            if (rightStatement) {
+                rightStatement.style.color = 'var(--text-secondary)';
+                rightStatement.style.fontWeight = '400';
+            }
+        }
     }
 
     // Set slider value (0 is not allowed)
@@ -169,6 +214,21 @@ function valueToPosition(value) {
             thumb.style.left = '50%';
             fill.style.left = '50%';
             fill.style.width = '0%';
+            // Reset colors when value is 0
+            const card = document.querySelector(`[data-question-index="${index}"]`);
+            const leftStatement = card?.querySelector('.statement-wrapper.left .statement');
+            const rightStatement = card?.querySelector('.statement-wrapper.right .statement');
+            fill.style.background = 'var(--accent-orange)';
+            thumb.style.background = 'var(--accent-orange)';
+            thumb.style.boxShadow = '0 2px 8px rgba(255, 107, 53, 0.6)';
+            if (leftStatement) {
+                leftStatement.style.color = 'var(--text-secondary)';
+                leftStatement.style.fontWeight = '400';
+            }
+            if (rightStatement) {
+                rightStatement.style.color = 'var(--text-secondary)';
+                rightStatement.style.fontWeight = '400';
+            }
         } else {
             answers[index] = value;
             updateSlider(value);
@@ -250,6 +310,9 @@ function setAnswerValue(index, value) {
     if (track) {
         const thumb = document.getElementById(`thumb-${index}`);
         const fill = document.getElementById(`fill-${index}`);
+        const card = document.querySelector(`[data-question-index="${index}"]`);
+        const leftStatement = card?.querySelector('.statement-wrapper.left .statement');
+        const rightStatement = card?.querySelector('.statement-wrapper.right .statement');
         
         if (value !== null && value !== 0) {
             const positions = {
@@ -264,10 +327,51 @@ function setAnswerValue(index, value) {
                 fill.style.left = `${position}%`;
                 fill.style.width = `${50 - position}%`;
             }
+            
+            // Update colors based on direction
+            if (value < 0) {
+                // Left side - Orange
+                fill.style.background = 'var(--accent-orange)';
+                thumb.style.background = 'var(--accent-orange)';
+                thumb.style.boxShadow = '0 2px 8px rgba(255, 107, 53, 0.6)';
+                if (leftStatement) {
+                    leftStatement.style.color = 'var(--accent-orange)';
+                    leftStatement.style.fontWeight = '600';
+                }
+                if (rightStatement) {
+                    rightStatement.style.color = 'var(--text-secondary)';
+                    rightStatement.style.fontWeight = '400';
+                }
+            } else if (value > 0) {
+                // Right side - Blue
+                fill.style.background = 'var(--accent-blue)';
+                thumb.style.background = 'var(--accent-blue)';
+                thumb.style.boxShadow = '0 2px 8px rgba(74, 144, 226, 0.6)';
+                if (rightStatement) {
+                    rightStatement.style.color = 'var(--accent-blue)';
+                    rightStatement.style.fontWeight = '600';
+                }
+                if (leftStatement) {
+                    leftStatement.style.color = 'var(--text-secondary)';
+                    leftStatement.style.fontWeight = '400';
+                }
+            }
         } else {
             thumb.style.left = '50%';
             fill.style.left = '50%';
             fill.style.width = '0%';
+            // Reset colors
+            fill.style.background = 'var(--accent-orange)';
+            thumb.style.background = 'var(--accent-orange)';
+            thumb.style.boxShadow = '0 2px 8px rgba(255, 107, 53, 0.6)';
+            if (leftStatement) {
+                leftStatement.style.color = 'var(--text-secondary)';
+                leftStatement.style.fontWeight = '400';
+            }
+            if (rightStatement) {
+                rightStatement.style.color = 'var(--text-secondary)';
+                rightStatement.style.fontWeight = '400';
+            }
         }
     }
     
@@ -308,6 +412,11 @@ function showQuestionPage(pageIndex) {
     cards.forEach((card, index) => {
         if (index >= pageStart && index < pageEnd) {
             card.classList.add('active');
+            // Apply colors if there's already an answer
+            const answer = answers[index];
+            if (answer !== null && answer !== undefined && answer !== 0) {
+                setAnswerValue(index, answer);
+            }
         } else {
             card.classList.remove('active');
         }
