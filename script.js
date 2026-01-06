@@ -1,8 +1,9 @@
 // Quiz configuration
-let QUESTIONS_PER_PAGE = 3;
+let QUESTIONS_PER_PAGE = 1;
 let TOTAL_QUESTIONS = 0;
 let currentPage = 0;
 let answers = [];
+let autoAdvanceTimeout = null;
 
 // Initialize the quiz
 document.addEventListener('DOMContentLoaded', async function() {
@@ -35,18 +36,13 @@ function initQuestions() {
     // Calculate total pages
     const totalPages = Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE);
 
-    // Create question pages
-    for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
-        const pageStart = pageIndex * QUESTIONS_PER_PAGE;
-        const pageEnd = Math.min(pageStart + QUESTIONS_PER_PAGE, TOTAL_QUESTIONS);
-        
-        for (let i = pageStart; i < pageEnd; i++) {
-            const question = questions[i];
-            const questionCard = createQuestionCard(question, i);
-            container.appendChild(questionCard);
-            // Setup slider after card is in the DOM
-            setupSlider(i);
-        }
+    // Create question cards - one per question since QUESTIONS_PER_PAGE = 1
+    for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+        const question = questions[i];
+        const questionCard = createQuestionCard(question, i);
+        container.appendChild(questionCard);
+        // Setup slider after card is in the DOM
+        setupSlider(i);
     }
 
     // Show first page
@@ -164,7 +160,7 @@ function valueToPosition(value) {
     }
 
     // Set slider value (0 is not allowed)
-    function setValue(value) {
+    function setValue(value, isAutoAdvance = true) {
         // Reject 0 as a valid answer
         if (value === 0) {
             // Reset to null if trying to set 0
@@ -174,8 +170,22 @@ function valueToPosition(value) {
             fill.style.left = '50%';
             fill.style.width = '0%';
         } else {
+            const wasUnanswered = answers[index] === null || answers[index] === undefined || answers[index] === 0;
             answers[index] = value;
             updateSlider(value);
+            
+            // Auto-advance to next question after a short delay
+            if (isAutoAdvance && wasUnanswered) {
+                // Clear any existing timeout
+                if (autoAdvanceTimeout) {
+                    clearTimeout(autoAdvanceTimeout);
+                }
+                
+                // Wait 500ms before auto-advancing for better UX
+                autoAdvanceTimeout = setTimeout(() => {
+                    autoAdvanceToNext();
+                }, 500);
+            }
         }
         updateNextButtonState();
         saveAnswers();
@@ -190,11 +200,26 @@ function valueToPosition(value) {
         document.addEventListener('mousemove', (e) => {
             if (isDragging) {
             const value = positionToValue(e.clientX);
-            setValue(value);
+            // Don't auto-advance while dragging, only when mouse is released
+            setValue(value, false);
             }
         });
         
         document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                // When drag ends, check if we should auto-advance
+                const currentAnswer = answers[index];
+                if (currentAnswer !== null && currentAnswer !== undefined && currentAnswer !== 0) {
+                    // Clear any existing timeout
+                    if (autoAdvanceTimeout) {
+                        clearTimeout(autoAdvanceTimeout);
+                    }
+                    // Auto-advance after a short delay
+                    autoAdvanceTimeout = setTimeout(() => {
+                        autoAdvanceToNext();
+                    }, 500);
+                }
+            }
             isDragging = false;
         });
 
@@ -210,11 +235,26 @@ function valueToPosition(value) {
             e.preventDefault();
             const touch = e.touches[0];
             const value = positionToValue(touch.clientX);
-            setValue(value);
+            // Don't auto-advance while dragging
+            setValue(value, false);
         }
     });
         
         document.addEventListener('touchend', () => {
+            if (isDragging) {
+                // When touch ends, check if we should auto-advance
+                const currentAnswer = answers[index];
+                if (currentAnswer !== null && currentAnswer !== undefined && currentAnswer !== 0) {
+                    // Clear any existing timeout
+                    if (autoAdvanceTimeout) {
+                        clearTimeout(autoAdvanceTimeout);
+                    }
+                    // Auto-advance after a short delay
+                    autoAdvanceTimeout = setTimeout(() => {
+                        autoAdvanceToNext();
+                    }, 500);
+                }
+            }
             isDragging = false;
         });
         
@@ -238,21 +278,32 @@ function valueToPosition(value) {
 
 function showQuestionPage(pageIndex) {
     const cards = document.querySelectorAll('.question-card');
-    const pageStart = pageIndex * QUESTIONS_PER_PAGE;
-    const pageEnd = Math.min(pageStart + QUESTIONS_PER_PAGE, TOTAL_QUESTIONS);
-
+    
     if (cards.length === 0) {
         console.error('No question cards found!');
         return;
     }
     
-    cards.forEach((card, index) => {
-        if (index >= pageStart && index < pageEnd) {
-            card.classList.add('active');
-        } else {
-            card.classList.remove('active');
-        }
+    // Clear any pending auto-advance
+    if (autoAdvanceTimeout) {
+        clearTimeout(autoAdvanceTimeout);
+        autoAdvanceTimeout = null;
+    }
+    
+    // Hide all cards
+    cards.forEach((card) => {
+        card.classList.remove('active');
     });
+    
+    // Show only the card for current page
+    if (pageIndex >= 0 && pageIndex < cards.length) {
+        cards[pageIndex].classList.add('active');
+        
+        // Smooth scroll to top of question
+        setTimeout(() => {
+            cards[pageIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
 
     currentPage = pageIndex;
     updateProgress();
@@ -273,33 +324,97 @@ function updateNavigationButtons() {
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     
+    // Show previous button if not on first question
     prevBtn.style.display = currentPage === 0 ? 'none' : 'block';
     
+    // Hide next button since we use auto-advance
+    // But keep it for manual navigation if needed
     const totalPages = Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE);
     if (currentPage === totalPages - 1) {
         nextBtn.textContent = 'Ver Resultados →';
+        nextBtn.style.display = 'block';
     } else {
         nextBtn.textContent = 'Próximo →';
+        // Hide next button - we'll use auto-advance
+        nextBtn.style.display = 'none';
     }
 }
 
 function updateNextButtonState() {
     const nextBtn = document.getElementById('nextBtn');
-    const pageStart = currentPage * QUESTIONS_PER_PAGE;
-    const pageEnd = Math.min(pageStart + QUESTIONS_PER_PAGE, TOTAL_QUESTIONS);
     
-    // Check if all questions on current page are answered (0 is not a valid answer)
-    let allAnswered = true;
-    for (let i = pageStart; i < pageEnd; i++) {
-        const answer = answers[i];
-        // Answer must exist, not be null/undefined, and not be 0
-        if (answer === null || answer === undefined || answer === 0) {
-            allAnswered = false;
-            break;
+    // Check if current question is answered (0 is not a valid answer)
+    const answer = answers[currentPage];
+    const isAnswered = answer !== null && answer !== undefined && answer !== 0;
+    
+    nextBtn.disabled = !isAnswered;
+}
+
+// Auto-advance to next question
+function autoAdvanceToNext() {
+    const totalPages = Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE);
+    
+    // If not on last question, go to next
+    if (currentPage < totalPages - 1) {
+        showQuestionPage(currentPage + 1);
+    } else {
+        // On last question, check if all are answered and go to results
+        if (validateAllQuestionsAnswered()) {
+            handleFinishQuiz();
+        }
+    }
+}
+
+// Handle finishing the quiz
+async function handleFinishQuiz() {
+    // Ensure user has ID before saving
+    let currentUser = JSON.parse(localStorage.getItem('hypeCurrentUser') || '{}');
+    
+    if (!currentUser.id && typeof checkSupabaseAvailable === 'function' && checkSupabaseAvailable()) {
+        // Try to sync user to Supabase
+        try {
+            const client = window.supabaseClient;
+            if (client && currentUser.username && currentUser.phone) {
+                // Check if user exists in Supabase
+                const { data: existingUser, error: findError } = await client
+                    .from('users')
+                    .select('*')
+                    .ilike('username', currentUser.username)
+                    .eq('phone', currentUser.phone)
+                    .single();
+                
+                if (existingUser) {
+                    // Update localStorage with Supabase user
+                    currentUser = {
+                        id: existingUser.id,
+                        username: existingUser.username,
+                        phone: existingUser.phone,
+                        phoneFormatted: existingUser.phone_formatted || existingUser.phoneFormatted,
+                        createdAt: existingUser.created_at || existingUser.createdAt
+                    };
+                    localStorage.setItem('hypeCurrentUser', JSON.stringify(currentUser));
+                } else {
+                    // User doesn't exist in Supabase, try to create
+                    if (typeof saveUser === 'function') {
+                        const savedUser = await saveUser({
+                            username: currentUser.username,
+                            phone: currentUser.phone,
+                            phoneFormatted: currentUser.phoneFormatted
+                        });
+                        if (savedUser && savedUser.id) {
+                            currentUser = savedUser;
+                            localStorage.setItem('hypeCurrentUser', JSON.stringify(currentUser));
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            // Silent fail - continue with localStorage user
         }
     }
     
-    nextBtn.disabled = !allAnswered;
+    await saveAnswers();
+    window.location.href = 'results.html';
 }
 
 function setupNavigation() {
@@ -313,73 +428,21 @@ function setupNavigation() {
     });
     
     nextBtn.addEventListener('click', async () => {
-        const totalPages = Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE);
-        
-        if (currentPage < totalPages - 1) {
-            showQuestionPage(currentPage + 1);
-        } else {
-            // Final validation: ensure ALL questions are answered before allowing results
+        // Only show on last question for manual navigation
+        if (currentPage === TOTAL_QUESTIONS - 1) {
             if (validateAllQuestionsAnswered()) {
-                // Ensure user has ID before saving
-                let currentUser = JSON.parse(localStorage.getItem('hypeCurrentUser') || '{}');
-                
-                if (!currentUser.id && typeof checkSupabaseAvailable === 'function' && checkSupabaseAvailable()) {
-                    // Try to sync user to Supabase
-                    try {
-                        const client = window.supabaseClient;
-                        if (client && currentUser.username && currentUser.phone) {
-                            // Check if user exists in Supabase
-                            const { data: existingUser, error: findError } = await client
-                                .from('users')
-                                .select('*')
-                                .ilike('username', currentUser.username)
-                                .eq('phone', currentUser.phone)
-                                .single();
-                            
-                            // Ignore "not found" errors (PGRST116)
-                            
-                            if (existingUser) {
-                                // Update localStorage with Supabase user
-                                currentUser = {
-                                    id: existingUser.id,
-                                    username: existingUser.username,
-                                    phone: existingUser.phone,
-                                    phoneFormatted: existingUser.phone_formatted || existingUser.phoneFormatted,
-                                    createdAt: existingUser.created_at || existingUser.createdAt
-                                };
-                                localStorage.setItem('hypeCurrentUser', JSON.stringify(currentUser));
-                            } else {
-                                // User doesn't exist in Supabase, try to create
-                                if (typeof saveUser === 'function') {
-                                    const savedUser = await saveUser({
-                                        username: currentUser.username,
-                                        phone: currentUser.phone,
-                                        phoneFormatted: currentUser.phoneFormatted
-                                    });
-                                    if (savedUser && savedUser.id) {
-                                        currentUser = savedUser;
-                                        localStorage.setItem('hypeCurrentUser', JSON.stringify(currentUser));
-                                    }
-                                }
-                            }
-                        }
-                    } catch (error) {
-                        // Silent fail - continue with localStorage user
-                    }
-                }
-                
-                await saveAnswers();
-                window.location.href = 'results.html';
+                await handleFinishQuiz();
             } else {
                 // Find and show the first unanswered question
                 const firstUnanswered = findFirstUnansweredQuestion();
                 if (firstUnanswered !== -1) {
-                    // Navigate to the page containing the unanswered question
-                    const pageWithUnanswered = Math.floor(firstUnanswered / QUESTIONS_PER_PAGE);
-                    showQuestionPage(pageWithUnanswered);
+                    showQuestionPage(firstUnanswered);
                     alert('Por favor, responda todas as perguntas antes de ver os resultados.');
                 }
             }
+        } else {
+            // Manual advance (though auto-advance should handle this)
+            showQuestionPage(currentPage + 1);
         }
     });
 }
