@@ -31,7 +31,7 @@ body {
     margin: 0 auto;
     background: var(--bg-secondary);
     border-radius: 20px;
-    padding: 25px;
+    padding: 30px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
@@ -39,9 +39,9 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 20px;
 }
 
 .logo {
@@ -107,32 +107,19 @@ header {
 }
 
 .questions-container {
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
 .question-card {
     background: var(--bg-card);
     border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 20px;
+    padding: 25px;
+    margin-bottom: 30px;
     display: none;
-    transition: opacity 0.3s ease;
 }
 
 .question-card.active {
     display: block;
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .question-card:last-of-type.active {
@@ -143,29 +130,28 @@ header {
     display: flex;
     align-items: center;
     gap: 15px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .question-number {
-    font-size: 42px;
+    font-size: 48px;
     font-weight: bold;
     color: var(--text-primary);
     opacity: 0.3;
     margin: 0;
-    line-height: 1;
 }
 
 .question-trait {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 500;
     color: var(--text-primary);
-    line-height: 1.4;
+    line-height: 1.5;
 }
 
 .question-content {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
     flex-wrap: wrap;
 }
 
@@ -174,7 +160,7 @@ header {
     min-width: 220px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 .statement-wrapper.left {
@@ -192,10 +178,9 @@ header {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    padding: 5px 14px;
+    padding: 4px 12px;
     border-radius: 12px;
     display: inline-block;
-    margin-bottom: 4px;
 }
 
 .left-label {
@@ -209,17 +194,16 @@ header {
 }
 
 .statement {
-    font-size: 15px;
-    line-height: 1.5;
+    font-size: 16px;
+    line-height: 1.6;
     color: var(--text-secondary);
-    margin: 0;
 }
 
 .slider-container {
     flex: 1;
     min-width: 300px;
     position: relative;
-    padding: 20px 0 25px 0;
+    padding: 30px 0 40px 0;
 }
 
 .slider-labels {
@@ -242,15 +226,6 @@ header {
     text-align: center;
     line-height: 1;
     user-select: none;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-}
-
-.slider-label.clickable-label:hover {
-    background: rgba(255, 107, 53, 0.2);
-    transform: translateX(-50%) scale(1.1);
 }
 
 .slider-label[data-value="-3"] { left: 8.33%; }
@@ -283,14 +258,14 @@ header {
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
-    width: 6px;
-    height: 20px;
+    width: 5px;
+    height: 18px;
     background: var(--text-primary);
-    border-radius: 3px;
+    border-radius: 2.5px;
     pointer-events: auto;
     cursor: pointer;
     transition: all 0.2s ease;
-    opacity: 0.6;
+    opacity: 0.5;
 }
 
 .slider-notch[data-value="-3"] { left: 8.33%; }
@@ -330,14 +305,14 @@ header {
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     background: var(--accent-orange);
     border-radius: 50%;
     cursor: grab;
     box-shadow: 0 2px 8px rgba(255, 107, 53, 0.6);
     transition: left 0.15s ease-out;
-    border: 3px solid var(--bg-secondary);
+    border: 2px solid var(--bg-secondary);
     z-index: 10;
 }
 
@@ -350,15 +325,14 @@ header {
 .navigation {
     display: flex;
     justify-content: space-between;
-    gap: 15px;
-    margin-top: 10px;
+    gap: 20px;
 }
 
 .nav-btn {
-    padding: 12px 25px;
+    padding: 15px 30px;
     border: none;
     border-radius: 10px;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -727,117 +701,85 @@ section h2 {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
+/* Mobile Buttons Styles */
+.mobile-buttons-container {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px 0;
+}
+
+.mobile-button-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 8px 0;
+    transition: opacity 0.2s ease;
+}
+
+.mobile-button-option:hover {
+    opacity: 0.8;
+}
+
+.mobile-button-bullet {
+    color: var(--text-primary);
+    font-size: 8px;
+    line-height: 1;
+    min-width: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.mobile-radio {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: var(--accent-orange);
+    flex-shrink: 0;
+    margin: 0;
+}
+
+.mobile-label {
+    color: var(--text-primary);
+    font-size: 16px;
+    cursor: pointer;
+    flex: 1;
+    user-select: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mobile-button-option:hover .mobile-label {
+    color: var(--accent-orange);
+}
+
+.mobile-radio:checked + .mobile-label {
+    color: var(--accent-orange);
+    font-weight: 600;
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 20px;
     }
-    
-    header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .progress-container {
-        width: 100%;
-    }
-
-    .question-card {
-        padding: 20px;
-        margin-bottom: 20px;
-    }
-    
-    .question-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-    
-    .question-number {
-        font-size: 36px;
-    }
-    
-    .question-trait {
-        font-size: 16px;
-        line-height: 1.5;
-    }
 
     .question-content {
-        flex-direction: row;
-        gap: 15px;
-        align-items: stretch;
-    }
-    
-    .statement-wrapper {
-        flex: 1;
-        min-width: 0;
-        gap: 10px;
+        flex-direction: column;
     }
 
     .statement {
-        font-size: 14px;
-        line-height: 1.5;
-    }
-    
-    .trait-label {
-        font-size: 11px;
-        padding: 6px 10px;
-    }
-    
-    .statement-wrapper.left {
-        align-items: flex-end;
-        text-align: right;
-    }
-    
-    .statement-wrapper.right {
-        align-items: flex-start;
-        text-align: left;
+        text-align: center !important;
     }
 
+    /* Hide slider on mobile */
     .slider-container {
-        flex: 1.2;
-        min-width: 0;
-        padding: 20px 0 25px 0;
-        order: 2;
+        display: none !important;
     }
-    
-    .statement-wrapper.left {
-        order: 1;
-    }
-    
-    .statement-wrapper.right {
-        order: 3;
-    }
-    
-    .slider-thumb {
-        width: 36px;
-        height: 36px;
-        border-width: 3px;
-    }
-    
-    .slider-notch {
-        width: 10px;
-        height: 28px;
-    }
-    
-    .slider-label {
-        font-size: 18px;
-        padding: 8px 12px;
-        font-weight: 700;
-    }
-    
-    .slider-track {
-        height: 14px;
-        margin: 10px 0;
-    }
-    
-    .slider-labels {
-        margin-bottom: 18px;
-        height: 35px;
-    }
-    
-    .slider-fill {
-        height: 14px;
+
+    /* Show mobile buttons on mobile */
+    .mobile-buttons-container {
+        display: flex !important;
     }
 
     .skills-grid,
@@ -862,52 +804,16 @@ section h2 {
         padding: 18px 40px;
         font-size: 18px;
     }
-    
-    .navigation {
-        flex-direction: column;
-        gap: 12px;
-        margin-top: 20px;
+}
+
+@media (min-width: 769px) {
+    /* Hide mobile buttons on desktop */
+    .mobile-buttons-container {
+        display: none !important;
     }
-    
-    .nav-btn {
-        width: 100%;
-        padding: 16px 30px;
-        font-size: 16px;
-    }
-    
-    .prev-btn {
-        order: 2;
-    }
-    
-    .next-btn {
-        order: 1;
-    }
-    
-    .container {
-        padding: 15px;
-    }
-    
-    header {
-        margin-bottom: 25px;
-        gap: 15px;
-    }
-    
-    .logo {
-        font-size: 28px;
-    }
-    
-    .progress-container {
-        gap: 12px;
-    }
-    
-    .progress-text {
-        font-size: 13px;
-        min-width: 45px;
-    }
-    
-    .close-btn {
-        width: 44px;
-        height: 44px;
-        font-size: 22px;
+
+    /* Show slider on desktop */
+    .slider-container {
+        display: block !important;
     }
 }

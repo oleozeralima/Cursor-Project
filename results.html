@@ -26,7 +26,7 @@
             <h1 class="results-title">Seu Perfil Profissional</h1>
             
             <section class="mandala-section">
-                <h2>Perfil de Personalidade BIG 5</h2>
+                <h2>Mandala de Personalidade BIG 5</h2>
                 <div class="mandala-container">
                     <canvas id="mandalaCanvas"></canvas>
                 </div>
@@ -57,6 +57,7 @@
     </div>
 
     <script>
+        // Check if user is logged in
         document.addEventListener('DOMContentLoaded', function() {
             const currentUser = localStorage.getItem('hypeCurrentUser');
             if (!currentUser) {
@@ -64,15 +65,18 @@
             }
         });
     </script>
+    <!-- Supabase Client Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="supabase-quiz.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="questions.js"></script>
     <script src="results.js"></script>
     <script>
+        // Initialize Supabase when Supabase library is loaded
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {
-                setTimeout(initSupabase, 100);
+                setTimeout(initSupabase, 100); // Small delay to ensure library is loaded
             });
         } else {
             setTimeout(initSupabase, 100);
