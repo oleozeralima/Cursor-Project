@@ -107,7 +107,7 @@ header {
 }
 
 .questions-container {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .question-card {
@@ -192,9 +192,10 @@ header {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    padding: 4px 12px;
+    padding: 5px 14px;
     border-radius: 12px;
     display: inline-block;
+    margin-bottom: 4px;
 }
 
 .left-label {
@@ -741,36 +742,46 @@ section h2 {
     }
 
     .question-card {
-        padding: 15px;
-        margin-bottom: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
     }
     
     .question-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 8px;
-        margin-bottom: 12px;
+        gap: 10px;
+        margin-bottom: 20px;
     }
     
     .question-number {
-        font-size: 32px;
+        font-size: 36px;
+    }
+    
+    .question-trait {
+        font-size: 16px;
+        line-height: 1.5;
     }
 
     .question-content {
         flex-direction: row;
-        gap: 10px;
+        gap: 15px;
         align-items: stretch;
     }
     
     .statement-wrapper {
         flex: 1;
         min-width: 0;
-        gap: 6px;
+        gap: 10px;
     }
 
     .statement {
-        font-size: 13px;
-        line-height: 1.4;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    
+    .trait-label {
+        font-size: 11px;
+        padding: 6px 10px;
     }
     
     .statement-wrapper.left {
@@ -784,9 +795,9 @@ section h2 {
     }
 
     .slider-container {
-        flex: 1;
+        flex: 1.2;
         min-width: 0;
-        padding: 12px 0 18px 0;
+        padding: 20px 0 25px 0;
         order: 2;
     }
     
@@ -799,18 +810,34 @@ section h2 {
     }
     
     .slider-thumb {
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
+        border-width: 3px;
     }
     
     .slider-notch {
-        width: 8px;
-        height: 24px;
+        width: 10px;
+        height: 28px;
     }
     
     .slider-label {
-        font-size: 16px;
-        padding: 6px 10px;
+        font-size: 18px;
+        padding: 8px 12px;
+        font-weight: 700;
+    }
+    
+    .slider-track {
+        height: 14px;
+        margin: 10px 0;
+    }
+    
+    .slider-labels {
+        margin-bottom: 18px;
+        height: 35px;
+    }
+    
+    .slider-fill {
+        height: 14px;
     }
 
     .skills-grid,
@@ -838,10 +865,14 @@ section h2 {
     
     .navigation {
         flex-direction: column;
+        gap: 12px;
+        margin-top: 20px;
     }
     
     .nav-btn {
         width: 100%;
+        padding: 16px 30px;
+        font-size: 16px;
     }
     
     .prev-btn {
@@ -850,5 +881,33 @@ section h2 {
     
     .next-btn {
         order: 1;
+    }
+    
+    .container {
+        padding: 15px;
+    }
+    
+    header {
+        margin-bottom: 25px;
+        gap: 15px;
+    }
+    
+    .logo {
+        font-size: 28px;
+    }
+    
+    .progress-container {
+        gap: 12px;
+    }
+    
+    .progress-text {
+        font-size: 13px;
+        min-width: 45px;
+    }
+    
+    .close-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 22px;
     }
 }
