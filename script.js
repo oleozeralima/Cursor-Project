@@ -44,9 +44,8 @@ function initQuestions() {
             const question = questions[i];
             const questionCard = createQuestionCard(question, i);
             container.appendChild(questionCard);
-            // Setup slider and mobile buttons after card is in the DOM
+            // Setup slider after card is in the DOM
             setupSlider(i);
-            setupMobileButtons(i);
         }
     }
 
@@ -85,51 +84,6 @@ function createQuestionCard(question, index) {
                         </div>
                         <div class="slider-fill" id="fill-${index}"></div>
                         <div class="slider-thumb" id="thumb-${index}"></div>
-                    </div>
-                </div>
-                
-                <div class="mobile-buttons-container" id="mobile-buttons-${index}">
-                    <div class="mobile-main-buttons">
-                        <button class="mobile-main-btn mobile-btn-discordo" data-question="${index}" data-type="discordo">
-                            ↑
-                        </button>
-                        <button class="mobile-main-btn mobile-btn-concordo" data-question="${index}" data-type="concordo">
-                            ↓
-                        </button>
-                    </div>
-                    <div class="mobile-sub-options mobile-sub-discordo" id="sub-discordo-${index}" style="display: none;">
-                        <div class="mobile-sub-option" data-value="-3">
-                            <span class="mobile-button-bullet">•</span>
-                            <input type="radio" name="answer-${index}" id="answer-${index}--3" value="-3" class="mobile-radio">
-                            <label for="answer-${index}--3" class="mobile-label">-3</label>
-                        </div>
-                        <div class="mobile-sub-option" data-value="-2">
-                            <span class="mobile-button-bullet">•</span>
-                            <input type="radio" name="answer-${index}" id="answer-${index}--2" value="-2" class="mobile-radio">
-                            <label for="answer-${index}--2" class="mobile-label">-2</label>
-                        </div>
-                        <div class="mobile-sub-option" data-value="-1">
-                            <span class="mobile-button-bullet">•</span>
-                            <input type="radio" name="answer-${index}" id="answer-${index}--1" value="-1" class="mobile-radio">
-                            <label for="answer-${index}--1" class="mobile-label">-1</label>
-                        </div>
-                    </div>
-                    <div class="mobile-sub-options mobile-sub-concordo" id="sub-concordo-${index}" style="display: none;">
-                        <div class="mobile-sub-option" data-value="1">
-                            <span class="mobile-button-bullet">•</span>
-                            <input type="radio" name="answer-${index}" id="answer-${index}-1" value="1" class="mobile-radio">
-                            <label for="answer-${index}-1" class="mobile-label">1</label>
-                        </div>
-                        <div class="mobile-sub-option" data-value="2">
-                            <span class="mobile-button-bullet">•</span>
-                            <input type="radio" name="answer-${index}" id="answer-${index}-2" value="2" class="mobile-radio">
-                            <label for="answer-${index}-2" class="mobile-label">2</label>
-                        </div>
-                        <div class="mobile-sub-option" data-value="3">
-                            <span class="mobile-button-bullet">•</span>
-                            <input type="radio" name="answer-${index}" id="answer-${index}-3" value="3" class="mobile-radio">
-                            <label for="answer-${index}-3" class="mobile-label">3</label>
-                        </div>
                     </div>
                 </div>
             
@@ -222,35 +176,6 @@ function valueToPosition(value) {
         updateNextButtonState();
         saveAnswers();
         
-        // Sync with mobile buttons if they exist
-        const container = document.getElementById(`mobile-buttons-${index}`);
-        if (container) {
-            const radioButtons = container.querySelectorAll('.mobile-radio');
-            const discordoBtn = container.querySelector('.mobile-btn-discordo');
-            const concordoBtn = container.querySelector('.mobile-btn-concordo');
-            const subDiscordo = document.getElementById(`sub-discordo-${index}`);
-            const subConcordo = document.getElementById(`sub-concordo-${index}`);
-            
-            radioButtons.forEach(radio => {
-                radio.checked = parseInt(radio.value) === value;
-            });
-            
-            // Show appropriate sub-options and update button states
-            if (value !== null && value !== 0) {
-                if (value < 0) {
-                    if (subDiscordo) subDiscordo.style.display = 'flex';
-                    if (subConcordo) subConcordo.style.display = 'none';
-                    if (discordoBtn) discordoBtn.classList.add('active');
-                    if (concordoBtn) concordoBtn.classList.remove('active');
-                } else {
-                    if (subDiscordo) subDiscordo.style.display = 'none';
-                    if (subConcordo) subConcordo.style.display = 'flex';
-                    if (discordoBtn) discordoBtn.classList.remove('active');
-                    if (concordoBtn) concordoBtn.classList.add('active');
-                }
-            }
-        }
-        
         // Auto-advance to next question when answered
         if (value !== null && value !== 0) {
             autoAdvanceToNext(index);
@@ -312,50 +237,6 @@ function valueToPosition(value) {
 
 }
 
-function setupMobileButtons(index) {
-    const container = document.getElementById(`mobile-buttons-${index}`);
-    if (!container) return;
-    
-    // Main buttons (↓/↑)
-    const discordoBtn = container.querySelector('.mobile-btn-discordo');
-    const concordoBtn = container.querySelector('.mobile-btn-concordo');
-    const subDiscordo = document.getElementById(`sub-discordo-${index}`);
-    const subConcordo = document.getElementById(`sub-concordo-${index}`);
-    
-    if (discordoBtn) {
-        discordoBtn.addEventListener('click', () => {
-            // Hide concordo sub-options
-            if (subConcordo) subConcordo.style.display = 'none';
-            // Show discordo sub-options
-            if (subDiscordo) subDiscordo.style.display = 'flex';
-            // Update button states
-            discordoBtn.classList.add('active');
-            concordoBtn?.classList.remove('active');
-        });
-    }
-    
-    if (concordoBtn) {
-        concordoBtn.addEventListener('click', () => {
-            // Hide discordo sub-options
-            if (subDiscordo) subDiscordo.style.display = 'none';
-            // Show concordo sub-options
-            if (subConcordo) subConcordo.style.display = 'flex';
-            // Update button states
-            concordoBtn.classList.add('active');
-            discordoBtn?.classList.remove('active');
-        });
-    }
-    
-    // Sub-option radio buttons
-    const radioButtons = container.querySelectorAll('.mobile-radio');
-    radioButtons.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            const value = parseInt(e.target.value);
-            setAnswerValue(index, value);
-        });
-    });
-}
-
 function setAnswerValue(index, value) {
     // Reject 0 as a valid answer
     if (value === 0) {
@@ -387,43 +268,6 @@ function setAnswerValue(index, value) {
             thumb.style.left = '50%';
             fill.style.left = '50%';
             fill.style.width = '0%';
-        }
-    }
-    
-    // Sync with mobile buttons
-    const container = document.getElementById(`mobile-buttons-${index}`);
-    if (container) {
-        const radioButtons = container.querySelectorAll('.mobile-radio');
-        const discordoBtn = container.querySelector('.mobile-btn-discordo');
-        const concordoBtn = container.querySelector('.mobile-btn-concordo');
-        const subDiscordo = document.getElementById(`sub-discordo-${index}`);
-        const subConcordo = document.getElementById(`sub-concordo-${index}`);
-        
-        radioButtons.forEach(radio => {
-            radio.checked = parseInt(radio.value) === value;
-        });
-        
-        // Show appropriate sub-options and update button states based on value
-        if (value !== null && value !== 0) {
-            if (value < 0) {
-                // Negative value - show discordo sub-options
-                if (subDiscordo) subDiscordo.style.display = 'flex';
-                if (subConcordo) subConcordo.style.display = 'none';
-                if (discordoBtn) discordoBtn.classList.add('active');
-                if (concordoBtn) concordoBtn.classList.remove('active');
-            } else {
-                // Positive value - show concordo sub-options
-                if (subDiscordo) subDiscordo.style.display = 'none';
-                if (subConcordo) subConcordo.style.display = 'flex';
-                if (discordoBtn) discordoBtn.classList.remove('active');
-                if (concordoBtn) concordoBtn.classList.add('active');
-            }
-        } else {
-            // No answer - hide all sub-options
-            if (subDiscordo) subDiscordo.style.display = 'none';
-            if (subConcordo) subConcordo.style.display = 'none';
-            if (discordoBtn) discordoBtn.classList.remove('active');
-            if (concordoBtn) concordoBtn.classList.remove('active');
         }
     }
     

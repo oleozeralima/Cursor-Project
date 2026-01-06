@@ -204,6 +204,7 @@ header {
     min-width: 300px;
     position: relative;
     padding: 30px 0 40px 0;
+    width: 100%;
 }
 
 .slider-labels {
@@ -825,14 +826,27 @@ section h2 {
         text-align: center !important;
     }
 
-    /* Hide slider on mobile */
+    /* Always show slider on all platforms */
     .slider-container {
-        display: none !important;
+        display: block !important;
+        min-width: 100%;
+        padding: 20px 0 30px 0;
     }
 
-    /* Show mobile buttons on mobile */
+    /* Make slider thumb larger on mobile for easier touch */
+    .slider-thumb {
+        width: 32px;
+        height: 32px;
+    }
+
+    .slider-notch {
+        width: 6px;
+        height: 20px;
+    }
+
+    /* Always hide mobile buttons */
     .mobile-buttons-container {
-        display: flex !important;
+        display: none !important;
     }
 
     .skills-grid,
@@ -860,12 +874,12 @@ section h2 {
 }
 
 @media (min-width: 769px) {
-    /* Hide mobile buttons on desktop */
+    /* Always hide mobile buttons */
     .mobile-buttons-container {
         display: none !important;
     }
 
-    /* Show slider on desktop */
+    /* Always show slider */
     .slider-container {
         display: block !important;
     }
