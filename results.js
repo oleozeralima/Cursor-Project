@@ -167,12 +167,23 @@ function drawMandala() {
         const labelRadius = maxRadius + 20;
         const labelX = centerX + Math.cos(angle) * labelRadius;
         const labelY = centerY + Math.sin(angle) * labelRadius;
-        ctx.fillText(trait, labelX, labelY);
+        
+        // Quebrar nomes longos em múltiplas linhas
+        const words = trait.split(' ');
+        if (words.length > 1 && trait.length > 12) {
+            // Nome longo - quebrar em 2 linhas
+            ctx.fillText(words[0], labelX, labelY - 7);
+            ctx.fillText(words.slice(1).join(' '), labelX, labelY + 7);
+        } else {
+            // Nome curto - uma linha
+            ctx.fillText(trait, labelX, labelY);
+        }
         
         // Draw score
         ctx.font = '12px Arial';
         ctx.fillStyle = category.color;
-        ctx.fillText(`${score}%`, labelX, labelY + 15);
+        const scoreOffset = (words.length > 1 && trait.length > 12) ? 20 : 15;
+        ctx.fillText(`${score}%`, labelX, labelY + scoreOffset);
     });
     
     // Draw center circle
