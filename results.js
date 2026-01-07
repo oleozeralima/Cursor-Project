@@ -112,17 +112,14 @@ function drawMandala() {
     
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const container = canvas.parentElement;
-    const isMobile = window.innerWidth <= 768;
-    const horizontalPadding = isMobile ? 20 : 80;
-    const maxCanvasSize = isMobile ? 520 : 640;
-    const containerWidth = Math.max(container.clientWidth - horizontalPadding, isMobile ? 260 : 320);
-    const size = Math.min(maxCanvasSize, containerWidth);
+    const containerWidth = container.clientWidth - 80;
+    const size = Math.min(600, containerWidth);
     canvas.width = size;
     canvas.height = size;
     
     const centerX = size / 2;
     const centerY = size / 2;
-    const maxRadius = size / 2 - (isMobile ? 22 : 40);
+    const maxRadius = size / 2 - 40;
     
     // Clear canvas
     ctx.clearRect(0, 0, size, size);
@@ -141,9 +138,6 @@ function drawMandala() {
     
     const traits = Object.keys(userSkills);
     const angleStep = (Math.PI * 2) / traits.length;
-    const labelFontSize = isMobile ? 12 : 14;
-    const scoreFontSize = isMobile ? 16 : 18;
-    const labelRadius = maxRadius + (isMobile ? 18 : 30);
     
     // Draw trait petals
     traits.forEach((trait, index) => {
@@ -164,7 +158,7 @@ function drawMandala() {
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         
-        const petalWidth = angleStep * (isMobile ? 0.9 : 0.8);
+        const petalWidth = angleStep * 0.8;
         const x1 = centerX + Math.cos(angle - petalWidth / 2) * radius;
         const y1 = centerY + Math.sin(angle - petalWidth / 2) * radius;
         const x2 = centerX + Math.cos(angle + petalWidth / 2) * radius;
@@ -183,7 +177,8 @@ function drawMandala() {
         // Draw trait name
         ctx.globalAlpha = 1;
         ctx.fillStyle = '#ffffff';
-        ctx.font = `bold ${labelFontSize}px Arial`;
+        ctx.font = 'bold 14px Arial';
+        const labelRadius = maxRadius + 30;
         const labelX = centerX + Math.cos(angle) * labelRadius;
         const labelY = centerY + Math.sin(angle) * labelRadius;
         const horizontal = Math.cos(angle);
@@ -195,23 +190,20 @@ function drawMandala() {
         ctx.fillText(trait, labelX, labelY);
         
         // Draw score
-        const scoreRadius = radius * (isMobile ? 0.7 : 0.55); // place inside the petal
+        const scoreRadius = radius * 0.55; // place inside the petal
         const scoreX = centerX + Math.cos(angle) * scoreRadius;
         const scoreY = centerY + Math.sin(angle) * scoreRadius;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.font = `bold ${scoreFontSize}px Arial`;
+        ctx.font = 'bold 18px Arial';
         ctx.fillStyle = category.color;
-        ctx.strokeStyle = 'rgba(0,0,0,0.45)';
-        ctx.lineWidth = 3;
-        ctx.strokeText(`${score}%`, scoreX, scoreY);
         ctx.fillText(`${score}%`, scoreX, scoreY);
     });
     
     // Draw center circle
     ctx.fillStyle = '#1a1a1a';
     ctx.beginPath();
-    ctx.arc(centerX, centerY, isMobile ? 22 : 30, 0, Math.PI * 2);
+    ctx.arc(centerX, centerY, 30, 0, Math.PI * 2);
     ctx.fill();
     
     // Create legend
