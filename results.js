@@ -196,7 +196,8 @@ function drawMandala() {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.font = 'bold 18px Arial';
-        ctx.fillStyle = category.color;
+        // Percentual sempre em branco para legibilidade sobre qualquer cor de setor
+        ctx.fillStyle = '#ffffff';
         ctx.fillText(`${score}%`, scoreX, scoreY);
     });
     
