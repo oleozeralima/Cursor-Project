@@ -112,12 +112,12 @@ function drawMandala() {
     
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const container = canvas.parentElement;
-    // Increase padding to ensure labels are not clipped
-    const containerWidth = container.clientWidth - 120;
+    // Much more padding to ensure labels are never clipped
+    const containerWidth = container.clientWidth - 160;
     
     // Make canvas responsive but with minimum size for readability
     const isMobile = window.innerWidth <= 768;
-    const baseSize = isMobile ? 400 : 650; // Increased sizes to accommodate labels
+    const baseSize = isMobile ? 450 : 700; // Increased sizes to accommodate labels with plenty of space
     const size = Math.min(baseSize, containerWidth);
     
     canvas.width = size;
@@ -125,14 +125,15 @@ function drawMandala() {
     
     const centerX = size / 2;
     const centerY = size / 2;
-    // Reduce mandala size significantly to leave more room for labels
-    const maxRadius = size / 2 - 80; // Much more margin for labels
+    // Drastically reduce mandala size to leave MUCH more room for labels
+    // Calculate based on longest trait name (Estabilidade Emocional ~20 chars)
+    const maxRadius = size / 2 - 140; // Very large margin for labels (140px)
     
     // Calculate font sizes based on canvas size for better readability
-    const fontSize = Math.max(16, size / 25); // Responsive font size
-    const scoreFontSize = Math.max(14, size / 30);
-    // Increase label offset significantly to prevent text clipping
-    const labelOffset = Math.max(50, size / 8); // Much larger offset for labels
+    const fontSize = Math.max(15, size / 28); // Slightly smaller font if needed
+    const scoreFontSize = Math.max(13, size / 32);
+    // Much larger label offset to prevent any text clipping
+    const labelOffset = Math.max(70, size / 6); // Much larger offset (at least 70px)
     
     // Clear canvas
     ctx.clearRect(0, 0, size, size);
@@ -179,23 +180,40 @@ function drawMandala() {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         
+        // Calculate label position with safe margins to prevent clipping
+        // Ensure labels stay well within canvas boundaries
+        const safeMargin = Math.max(40, fontSize * 2); // Safe margin at least 2x font size
+        const maxLabelRadius = Math.min(size / 2 - safeMargin, maxRadius + labelOffset);
+        const labelRadius = Math.min(maxRadius + labelOffset, maxLabelRadius);
+        
+        const labelX = centerX + Math.cos(angle) * labelRadius;
+        const labelY = centerY + Math.sin(angle) * labelRadius;
+        
+        // Ensure text is within canvas bounds with padding
+        const textMetrics = ctx.measureText(trait);
+        const textWidth = textMetrics.width;
+        const textPadding = 10;
+        
+        // Clamp positions to ensure text stays within canvas
+        const clampedX = Math.max(textWidth / 2 + textPadding, 
+                          Math.min(size - textWidth / 2 - textPadding, labelX));
+        const clampedY = Math.max(fontSize + textPadding, 
+                          Math.min(size - fontSize - textPadding, labelY));
+        
         // Add text shadow for better readability
         ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
         ctx.shadowBlur = 4;
         ctx.shadowOffsetX = 2;
         ctx.shadowOffsetY = 2;
         
-        const labelRadius = maxRadius + labelOffset;
-        const labelX = centerX + Math.cos(angle) * labelRadius;
-        const labelY = centerY + Math.sin(angle) * labelRadius;
-        ctx.fillText(trait, labelX, labelY);
+        ctx.fillText(trait, clampedX, clampedY);
         
         // Draw score with better visibility
         ctx.font = `bold ${scoreFontSize}px Arial, sans-serif`;
         ctx.fillStyle = category.color;
         ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
         ctx.shadowBlur = 3;
-        ctx.fillText(`${score}%`, labelX, labelY + fontSize + 5);
+        ctx.fillText(`${score}%`, clampedX, clampedY + fontSize + 8);
         
         // Reset shadow
         ctx.shadowColor = 'transparent';

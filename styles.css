@@ -501,6 +501,7 @@ section {
     background: var(--bg-card);
     padding: 30px;
     border-radius: 15px;
+    overflow: visible;
 }
 
 section h2 {
@@ -513,13 +514,14 @@ section h2 {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 40px 20px;
     background: var(--bg-primary);
     border-radius: 10px;
     margin-bottom: 20px;
     width: 100%;
-    min-height: 400px;
+    min-height: 450px;
     overflow: visible;
+    box-sizing: border-box;
 }
 
 #mandalaCanvas {
@@ -861,8 +863,8 @@ section h2 {
     }
 
     .mandala-container {
-        padding: 20px;
-        min-height: 400px;
+        padding: 50px 20px;
+        min-height: 450px;
         overflow: visible;
     }
 
