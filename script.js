@@ -235,11 +235,6 @@ function valueToPosition(value) {
         }
         updateNextButtonState();
         saveAnswers();
-        
-        // Auto-advance to next question when answered
-        if (value !== null && value !== 0) {
-            autoAdvanceToNext(index);
-        }
         }
         
     // Mouse events - only allow dragging the thumb, not clicking the track
@@ -377,27 +372,8 @@ function setAnswerValue(index, value) {
     
     updateNextButtonState();
     saveAnswers();
-    
-    // Auto-advance to next question when answered
-    if (value !== null && value !== 0) {
-        autoAdvanceToNext(index);
-    }
 }
 
-function autoAdvanceToNext(currentIndex) {
-    // Wait a bit for visual feedback, then advance
-    setTimeout(() => {
-        // Check if there's a next question
-        if (currentIndex < TOTAL_QUESTIONS - 1) {
-            const nextPage = currentIndex + 1; // Since QUESTIONS_PER_PAGE = 1, page = question index
-            showQuestionPage(nextPage);
-        } else {
-            // Last question - update navigation to show "Ver Resultados" button
-            updateNavigationButtons();
-            updateNextButtonState();
-        }
-    }, 500);
-}
 
 function showQuestionPage(pageIndex) {
     const cards = document.querySelectorAll('.question-card');
@@ -447,11 +423,11 @@ function updateNavigationButtons() {
     if (currentPage === totalPages - 1) {
         // Last question - show "Ver Resultados" button
         nextBtn.textContent = 'Ver Resultados →';
-        nextBtn.style.display = 'block';
     } else {
-        // Hide "Próximo" button until last question (auto-advance handles navigation)
-        nextBtn.style.display = 'none';
+        // Show "Próximo" button for all other questions
+        nextBtn.textContent = 'Próximo →';
     }
+    nextBtn.style.display = 'block';
 }
 
 function updateNextButtonState() {

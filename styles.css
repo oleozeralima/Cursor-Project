@@ -513,15 +513,18 @@ section h2 {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 40px;
+    padding: 20px;
     background: var(--bg-primary);
     border-radius: 10px;
     margin-bottom: 20px;
+    width: 100%;
+    min-height: 400px;
 }
 
 #mandalaCanvas {
     max-width: 100%;
     height: auto;
+    display: block;
 }
 
 .skills-legend {
@@ -853,6 +856,20 @@ section h2 {
     .skills-grid,
     .compatibility-grid {
         grid-template-columns: 1fr;
+    }
+
+    .mandala-container {
+        padding: 15px;
+        min-height: 350px;
+    }
+
+    .skills-legend {
+        font-size: 14px;
+    }
+
+    .legend-item {
+        padding: 6px 12px;
+        font-size: 14px;
     }
 
     .welcome-title {
