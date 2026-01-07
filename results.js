@@ -195,7 +195,7 @@ function drawMandala() {
         ctx.globalAlpha = 1;
         ctx.fillStyle = '#ffffff';
         ctx.font = isMobile ? 'bold 14px Arial' : 'bold 14px Arial';
-        const labelRadius = maxRadius + (isMobile ? 18 : 30);
+        const labelRadius = maxRadius + (isMobile ? 20 : 30);
         const labelX = centerX + Math.cos(angle) * labelRadius;
         const labelY = centerY + Math.sin(angle) * labelRadius;
         const horizontal = Math.cos(angle);
@@ -206,16 +206,27 @@ function drawMandala() {
         ctx.fillText(trait, labelX, labelY);
         
         // Draw score
-        // Keep scores fully visible on mobile by pushing them outward a bit
-        const scoreRadius = Math.max(radius * 0.62, isMobile ? maxRadius * 0.24 : radius * 0.55);
-        const scoreX = centerX + Math.cos(angle) * scoreRadius;
-        const scoreY = centerY + Math.sin(angle) * scoreRadius;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.font = isMobile ? 'bold 16px Arial' : 'bold 18px Arial';
-        const scoreColor = isMobile ? '#ffffff' : category.color;
-        ctx.fillStyle = scoreColor;
-        ctx.fillText(`${score}%`, scoreX, scoreY);
+        if (isMobile) {
+            // Place score just outside the label, below the topic for clarity
+            const scoreRadiusOuter = labelRadius + 16;
+            const scoreX = centerX + Math.cos(angle) * scoreRadiusOuter;
+            const scoreY = centerY + Math.sin(angle) * scoreRadiusOuter;
+            ctx.textAlign = horizontal > 0.2 ? 'right' : horizontal < -0.2 ? 'left' : 'center';
+            ctx.textBaseline = vertical < -0.2 ? 'top' : vertical > 0.2 ? 'bottom' : 'middle';
+            ctx.font = 'bold 13px Arial';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(`${score}%`, scoreX, scoreY);
+        } else {
+            // Desktop: keep score inside the petal
+            const scoreRadius = Math.max(radius * 0.62, radius * 0.55);
+            const scoreX = centerX + Math.cos(angle) * scoreRadius;
+            const scoreY = centerY + Math.sin(angle) * scoreRadius;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = 'bold 18px Arial';
+            ctx.fillStyle = category.color;
+            ctx.fillText(`${score}%`, scoreX, scoreY);
+        }
     });
     
     // Draw center circle
