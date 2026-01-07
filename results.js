@@ -124,11 +124,17 @@ function drawMandala() {
     // Clear canvas
     ctx.clearRect(0, 0, size, size);
     
-    // Draw background circle
-    ctx.fillStyle = '#252525';
+    // Draw background circle with subtle depth
+    const bgGradient = ctx.createRadialGradient(centerX, centerY, maxRadius * 0.12, centerX, centerY, maxRadius);
+    bgGradient.addColorStop(0, '#202020');
+    bgGradient.addColorStop(1, '#252525');
+    ctx.fillStyle = bgGradient;
     ctx.beginPath();
     ctx.arc(centerX, centerY, maxRadius, 0, Math.PI * 2);
     ctx.fill();
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.stroke();
     
     const traits = Object.keys(userSkills);
     const angleStep = (Math.PI * 2) / traits.length;
@@ -142,9 +148,13 @@ function drawMandala() {
         const category = big5Traits[trait];
         const color = category.color;
         
-        // Draw petal
+        // Draw petal with soft shadow and outline
+        ctx.save();
         ctx.fillStyle = color;
-        ctx.globalAlpha = 0.7;
+        ctx.globalAlpha = 0.78;
+        ctx.shadowColor = 'rgba(0,0,0,0.35)';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetY = 3;
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         
@@ -158,31 +168,32 @@ function drawMandala() {
         ctx.arc(centerX, centerY, radius, angle - petalWidth / 2, angle + petalWidth / 2);
         ctx.lineTo(centerX, centerY);
         ctx.fill();
+        ctx.shadowColor = 'transparent';
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+        ctx.stroke();
+        ctx.restore();
         
         // Draw trait name
         ctx.globalAlpha = 1;
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 14px Arial';
-        ctx.textAlign = 'center';
-        const labelRadius = maxRadius + 20;
+        const labelRadius = maxRadius + 30;
         const labelX = centerX + Math.cos(angle) * labelRadius;
         const labelY = centerY + Math.sin(angle) * labelRadius;
+        const horizontal = Math.cos(angle);
+        const vertical = Math.sin(angle);
         
-        // Quebrar nomes longos em múltiplas linhas
-        const words = trait.split(' ');
-        if (words.length > 1 && trait.length > 12) {
-            // Nome longo - quebrar em 2 linhas
-            ctx.fillText(words[0], labelX, labelY - 7);
-            ctx.fillText(words.slice(1).join(' '), labelX, labelY + 7);
-        } else {
-            // Nome curto - uma linha
-            ctx.fillText(trait, labelX, labelY);
-        }
+        // Keep labels inside the canvas on all screen sizes
+        ctx.textAlign = horizontal > 0.2 ? 'right' : horizontal < -0.2 ? 'left' : 'center';
+        ctx.textBaseline = vertical < -0.2 ? 'top' : vertical > 0.2 ? 'bottom' : 'middle';
+        ctx.fillText(trait, labelX, labelY);
         
         // Draw score
-        ctx.font = '12px Arial';
+        ctx.textBaseline = 'middle';
+        ctx.font = 'bold 14px Arial';
         ctx.fillStyle = category.color;
-        const scoreOffset = (words.length > 1 && trait.length > 12) ? 20 : 15;
+        const scoreOffset = vertical > 0.2 ? -18 : vertical < -0.2 ? 18 : 18;
         ctx.fillText(`${score}%`, labelX, labelY + scoreOffset);
     });
     
