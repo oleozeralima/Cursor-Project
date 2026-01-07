@@ -113,9 +113,9 @@ function drawMandala() {
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const container = canvas.parentElement;
     const isMobile = window.innerWidth <= 768;
-    const padding = isMobile ? 6 : 80;
-    const availableWidth = Math.max(240, container.clientWidth - padding);
-    const size = Math.min(isMobile ? 480 : 600, availableWidth);
+    const padding = isMobile ? 16 : 80;
+    const availableWidth = Math.max(260, container.clientWidth - padding);
+    const size = Math.min(isMobile ? 520 : 600, availableWidth);
     const pixelRatio = window.devicePixelRatio || 1;
     
     // Keep the canvas crisp on high-DPI screens without affecting desktop layout
@@ -134,7 +134,7 @@ function drawMandala() {
     
     const centerX = size / 2;
     const centerY = size / 2;
-    const maxRadius = size / 2 - (isMobile ? 10 : 40);
+    const maxRadius = size / 2 - (isMobile ? 40 : 40);
     const minPetalRadius = isMobile ? maxRadius * 0.22 : 0;
     
     // Clear canvas
@@ -195,7 +195,7 @@ function drawMandala() {
         ctx.globalAlpha = 1;
         ctx.fillStyle = '#ffffff';
         ctx.font = isMobile ? 'bold 14px Arial' : 'bold 14px Arial';
-        const labelRadius = maxRadius + (isMobile ? 30 : 30);
+        const labelRadius = maxRadius + (isMobile ? 18 : 30);
         const labelX = centerX + Math.cos(angle) * labelRadius;
         const labelY = centerY + Math.sin(angle) * labelRadius;
         const horizontal = Math.cos(angle);
