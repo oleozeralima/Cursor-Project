@@ -113,9 +113,9 @@ function drawMandala() {
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const container = canvas.parentElement;
     const isMobile = window.innerWidth <= 768;
-    const padding = isMobile ? 12 : 80;
-    const availableWidth = Math.max(220, container.clientWidth - padding);
-    const size = Math.min(isMobile ? 420 : 600, availableWidth);
+    const padding = isMobile ? 6 : 80;
+    const availableWidth = Math.max(240, container.clientWidth - padding);
+    const size = Math.min(isMobile ? 480 : 600, availableWidth);
     const pixelRatio = window.devicePixelRatio || 1;
     
     // Keep the canvas crisp on high-DPI screens without affecting desktop layout
@@ -134,7 +134,8 @@ function drawMandala() {
     
     const centerX = size / 2;
     const centerY = size / 2;
-    const maxRadius = size / 2 - (isMobile ? 16 : 40);
+    const maxRadius = size / 2 - (isMobile ? 10 : 40);
+    const minPetalRadius = isMobile ? maxRadius * 0.22 : 0;
     
     // Clear canvas
     ctx.clearRect(0, 0, size, size);
@@ -158,7 +159,7 @@ function drawMandala() {
     traits.forEach((trait, index) => {
         const angle = index * angleStep - Math.PI / 2;
         const score = userSkills[trait];
-        const radius = (score / 100) * maxRadius;
+        const radius = Math.max(minPetalRadius, (score / 100) * maxRadius);
         
         const category = big5Traits[trait];
         const color = category.color;
@@ -166,7 +167,7 @@ function drawMandala() {
         // Draw petal with soft shadow and outline
         ctx.save();
         ctx.fillStyle = color;
-        ctx.globalAlpha = 0.78;
+        ctx.globalAlpha = isMobile ? 0.9 : 0.78;
         ctx.shadowColor = 'rgba(0,0,0,0.35)';
         ctx.shadowBlur = 10;
         ctx.shadowOffsetY = 3;
@@ -195,7 +196,7 @@ function drawMandala() {
             ctx.globalAlpha = 1;
             ctx.fillStyle = '#ffffff';
             ctx.font = isMobile ? 'bold 12px Arial' : 'bold 14px Arial';
-            const labelRadius = maxRadius + (isMobile ? 16 : 30);
+            const labelRadius = maxRadius + (isMobile ? 24 : 30);
             const labelX = centerX + Math.cos(angle) * labelRadius;
             const labelY = centerY + Math.sin(angle) * labelRadius;
             const horizontal = Math.cos(angle);
@@ -213,7 +214,7 @@ function drawMandala() {
         const scoreY = centerY + Math.sin(angle) * scoreRadius;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.font = isMobile ? 'bold 16px Arial' : 'bold 18px Arial';
+        ctx.font = isMobile ? 'bold 18px Arial' : 'bold 18px Arial';
         const scoreColor = isMobile ? '#ffffff' : category.color;
         ctx.fillStyle = scoreColor;
         ctx.fillText(`${score}%`, scoreX, scoreY);
@@ -222,7 +223,7 @@ function drawMandala() {
     // Draw center circle
     ctx.fillStyle = '#1a1a1a';
     ctx.beginPath();
-    ctx.arc(centerX, centerY, 30, 0, Math.PI * 2);
+    ctx.arc(centerX, centerY, isMobile ? 22 : 30, 0, Math.PI * 2);
     ctx.fill();
     
     // Create legend
