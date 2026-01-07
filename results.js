@@ -194,10 +194,11 @@ function drawMandala() {
         // Show labels also on mobile, similar to desktop
         ctx.globalAlpha = 1;
         ctx.fillStyle = '#ffffff';
-        ctx.font = isMobile ? 'bold 14px Arial' : 'bold 14px Arial';
-        const labelRadius = maxRadius + (isMobile ? 20 : 30);
-        const labelX = centerX + Math.cos(angle) * labelRadius;
-        const labelY = centerY + Math.sin(angle) * labelRadius;
+        const labelRadiusTopic = maxRadius + (isMobile ? 44 : 30);
+        const scoreBaseRadius = maxRadius + (isMobile ? 20 : 30); // keep percentage position unchanged
+        ctx.font = isMobile ? 'bold 13px Arial' : 'bold 14px Arial';
+        const labelX = centerX + Math.cos(angle) * labelRadiusTopic;
+        const labelY = centerY + Math.sin(angle) * labelRadiusTopic;
         const horizontal = Math.cos(angle);
         const vertical = Math.sin(angle);
         
@@ -208,7 +209,7 @@ function drawMandala() {
         // Draw score
         if (isMobile) {
             // Place score just outside the label, below the topic for clarity
-            const scoreRadiusOuter = labelRadius + 16;
+            const scoreRadiusOuter = scoreBaseRadius + 16;
             const scoreX = centerX + Math.cos(angle) * scoreRadiusOuter;
             const scoreY = centerY + Math.sin(angle) * scoreRadiusOuter;
             ctx.textAlign = horizontal > 0.2 ? 'right' : horizontal < -0.2 ? 'left' : 'center';
