@@ -190,34 +190,38 @@ function drawMandala() {
         ctx.stroke();
         ctx.restore();
         
-        // Draw trait name (smaller and closer on mobile to avoid overlap)
-        // Show labels also on mobile, similar to desktop
+        // Draw trait name and score
         ctx.globalAlpha = 1;
-        ctx.fillStyle = '#ffffff';
-        const labelRadiusTopic = maxRadius + (isMobile ? 12 : 30);
-        const scoreBaseRadius = maxRadius + (isMobile ? 28 : 30); // keep percentage position relative to label
-        ctx.font = isMobile ? 'bold 12px Arial' : 'bold 14px Arial';
-        const labelX = centerX + Math.cos(angle) * labelRadiusTopic;
-        const labelY = centerY + Math.sin(angle) * labelRadiusTopic;
-        const horizontal = Math.cos(angle);
-        const vertical = Math.sin(angle);
         
-        ctx.textAlign = horizontal > 0.2 ? 'right' : horizontal < -0.2 ? 'left' : 'center';
-        ctx.textBaseline = vertical < -0.2 ? 'top' : vertical > 0.2 ? 'bottom' : 'middle';
-        ctx.fillText(trait, labelX, labelY);
-        
-        // Draw score
         if (isMobile) {
-            // Place score stacked below the topic outside the circle for clarity
-            const scoreRadiusOuter = scoreBaseRadius + 14;
-            const scoreX = centerX + Math.cos(angle) * scoreRadiusOuter;
-            const scoreY = centerY + Math.sin(angle) * scoreRadiusOuter;
-            ctx.textAlign = horizontal > 0.2 ? 'right' : horizontal < -0.2 ? 'left' : 'center';
-            ctx.textBaseline = vertical < -0.2 ? 'top' : vertical > 0.2 ? 'bottom' : 'middle';
-            ctx.font = 'bold 12px Arial';
+            // Mobile: Only draw percentage inside the petal (legend shows trait names)
+            // Position percentage inside the petal with good contrast
+            const scoreRadius = Math.max(radius * 0.65, maxRadius * 0.35);
+            const scoreX = centerX + Math.cos(angle) * scoreRadius;
+            const scoreY = centerY + Math.sin(angle) * scoreRadius;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = 'bold 14px Arial';
+            // Draw text shadow/outline for better visibility
+            ctx.strokeStyle = 'rgba(0,0,0,0.7)';
+            ctx.lineWidth = 3;
+            ctx.strokeText(`${score}%`, scoreX, scoreY);
             ctx.fillStyle = '#ffffff';
             ctx.fillText(`${score}%`, scoreX, scoreY);
         } else {
+            // Desktop: Draw labels outside the circle
+            ctx.fillStyle = '#ffffff';
+            const labelRadiusTopic = maxRadius + 30;
+            ctx.font = 'bold 14px Arial';
+            const labelX = centerX + Math.cos(angle) * labelRadiusTopic;
+            const labelY = centerY + Math.sin(angle) * labelRadiusTopic;
+            const horizontal = Math.cos(angle);
+            const vertical = Math.sin(angle);
+            
+            ctx.textAlign = horizontal > 0.2 ? 'right' : horizontal < -0.2 ? 'left' : 'center';
+            ctx.textBaseline = vertical < -0.2 ? 'top' : vertical > 0.2 ? 'bottom' : 'middle';
+            ctx.fillText(trait, labelX, labelY);
+            
             // Desktop: keep score inside the petal
             const scoreRadius = Math.max(radius * 0.62, radius * 0.55);
             const scoreX = centerX + Math.cos(angle) * scoreRadius;
@@ -239,17 +243,20 @@ function drawMandala() {
     // Create legend
     const legend = document.getElementById('skillsLegend');
     if (legend) {
-    legend.innerHTML = '';
+        legend.innerHTML = '';
+        const isMobileLegend = window.innerWidth <= 768;
         traits.forEach(trait => {
-        const item = document.createElement('div');
-        item.className = 'legend-item';
+            const item = document.createElement('div');
+            item.className = 'legend-item';
             const category = big5Traits[trait];
-        item.innerHTML = `
-            <div class="legend-color" style="background: ${category.color}"></div>
-                <span>${trait}</span>
-        `;
-        legend.appendChild(item);
-    });
+            const score = userSkills[trait];
+            // On mobile, show percentage in legend since labels are not on canvas
+            item.innerHTML = `
+                <div class="legend-color" style="background: ${category.color}"></div>
+                <span>${trait}${isMobileLegend ? ` - ${score}%` : ''}</span>
+            `;
+            legend.appendChild(item);
+        });
     }
 }
 

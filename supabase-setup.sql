@@ -10,9 +10,11 @@
 -- ========================================
 
 -- Tabela de usuários
+-- NOTA: username NÃO é único - múltiplos usuários podem ter o mesmo nome
+-- O identificador único é o telefone (phone)
 CREATE TABLE IF NOT EXISTS public.users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    username TEXT UNIQUE NOT NULL,
+    username TEXT NOT NULL,
     phone TEXT UNIQUE NOT NULL,
     phone_formatted TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

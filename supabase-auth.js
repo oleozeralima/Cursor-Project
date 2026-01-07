@@ -58,12 +58,12 @@ async function saveUser(user) {
                 .single();
 
             if (error) {
-                // Se usuário já existe, busca usuário existente
+                // Se telefone já existe, busca usuário existente pelo telefone
                 if (error.code === '23505') {
                     const { data: existingUser } = await client
                         .from('users')
                         .select('*')
-                        .eq('username', user.username)
+                        .eq('phone', user.phone)
                         .single();
 
                     if (existingUser) {
@@ -256,13 +256,8 @@ async function validateUsername(username, isLogin = false) {
         return { valid: false, error: 'Nome de usuário pode conter apenas letras, números, _ e -' };
     }
     
-        const exists = await usernameExists(username.trim());
-    if (!isLogin && exists) {
-        return { valid: false, error: 'Este nome de usuário já está em uso' };
-        }
-    if (isLogin && !exists) {
-        return { valid: false, error: 'Usuário não encontrado' };
-    }
+    // Nota: múltiplos usuários podem ter o mesmo nome (identificados pelo telefone)
+    // Não verificamos se username existe no registro
     
     return { valid: true };
 }
@@ -501,7 +496,7 @@ function initAuthForm() {
                     const validation = await validateUsername(usernameInput.value.trim(), false);
                     if (validation.valid) {
                         hideError('usernameError');
-                        showSuccess('usernameSuccess', '✓ Nome de usuário disponível');
+                        // Não mostra mensagem de "disponível" pois múltiplos usuários podem ter o mesmo nome
                     } else {
                         hideSuccess('usernameSuccess');
                         showError('usernameError', validation.error);
@@ -621,7 +616,7 @@ function initializeAuth() {
                         const validation = await validateUsername(usernameInput.value.trim(), false);
                         if (validation.valid) {
                             hideError('usernameError');
-                            showSuccess('usernameSuccess', '✓ Nome de usuário disponível');
+                            // Não mostra mensagem de "disponível" pois múltiplos usuários podem ter o mesmo nome
                         } else {
                             hideSuccess('usernameSuccess');
                             showError('usernameError', validation.error);
