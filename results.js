@@ -191,22 +191,19 @@ function drawMandala() {
         ctx.restore();
         
         // Draw trait name (smaller and closer on mobile to avoid overlap)
-        const shouldDrawLabel = !isMobile || size >= 320;
-        if (shouldDrawLabel) {
-            ctx.globalAlpha = 1;
-            ctx.fillStyle = '#ffffff';
-            ctx.font = isMobile ? 'bold 12px Arial' : 'bold 14px Arial';
-            const labelRadius = maxRadius + (isMobile ? 24 : 30);
-            const labelX = centerX + Math.cos(angle) * labelRadius;
-            const labelY = centerY + Math.sin(angle) * labelRadius;
-            const horizontal = Math.cos(angle);
-            const vertical = Math.sin(angle);
-            
-            // Keep labels readable without colliding on mobile
-            ctx.textAlign = horizontal > 0.2 ? 'right' : horizontal < -0.2 ? 'left' : 'center';
-            ctx.textBaseline = vertical < -0.2 ? 'top' : vertical > 0.2 ? 'bottom' : 'middle';
-            ctx.fillText(trait, labelX, labelY);
-        }
+        // Show labels also on mobile, similar to desktop
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#ffffff';
+        ctx.font = isMobile ? 'bold 14px Arial' : 'bold 14px Arial';
+        const labelRadius = maxRadius + (isMobile ? 30 : 30);
+        const labelX = centerX + Math.cos(angle) * labelRadius;
+        const labelY = centerY + Math.sin(angle) * labelRadius;
+        const horizontal = Math.cos(angle);
+        const vertical = Math.sin(angle);
+        
+        ctx.textAlign = horizontal > 0.2 ? 'right' : horizontal < -0.2 ? 'left' : 'center';
+        ctx.textBaseline = vertical < -0.2 ? 'top' : vertical > 0.2 ? 'bottom' : 'middle';
+        ctx.fillText(trait, labelX, labelY);
         
         // Draw score
         // Keep scores fully visible on mobile by pushing them outward a bit
